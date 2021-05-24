@@ -10,3 +10,4 @@
  */
 
 import './menu/menu.js';
+import './map/map.js';

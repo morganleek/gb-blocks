@@ -1,37 +1,76 @@
 <?php
-	function gutenberg_examples_dynamic_render_callback($block_attributes, $content)
-	{
-		$recent_posts = wp_get_recent_posts(array(
-			'numberposts' => 1,
-			'post_status' => 'publish',
-		));
-		if (count($recent_posts) === 0) {
-			return 'No posts';
-		}
-		$post = $recent_posts[0];
-		$post_id = $post['ID'];
-		return sprintf(
-			'<a class="wp-block-my-plugin-latest-post" href="%1$s">%2$s</a>',
-			esc_url(get_permalink($post_id)),
-			esc_html(get_the_title($post_id))
-		);
+	// Exit if accessed directly.
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
 	}
 
-	// function gutenberg_examples_dynamic() {
-	// 	// Load dependency
-	// 	$asset_file = include(plugin_dir_path(__FILE__) . 'build/index.asset.php');
+	// Register
+	function gb_block_menu_init() {
+		register_block_type( 'gb/block-gb-menu', array(
+			'api_version' => 2,
+			'style'         => 'gb-blocks-style-css',
+			'editor_script' => 'gb-blocks-block-js',
+			'editor_style'  => 'gb-blocks-block-editor-css',
+			'render_callback' => 'gb_blocks_menu_render_callback',
+			'attributes' => array(
+				'menu' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'className' => array(
+					'type' => 'string',
+					'default' => ''
+				)
+			)
+		) );
+	}
 
-	// 	wp_register_script(
-	// 		'gutenberg-examples-dynamic',
-	// 		plugins_url('build/block.js', __FILE__),
-	// 		$asset_file['dependencies'],
-	// 		$asset_file['version']
-	// 	);
+	add_action( 'init', 'gb_block_menu_init', 55 );
 
-	// 	register_block_type('gutenberg-examples/example-dynamic', array(
-	// 		'api_version' => 2,
-	// 		'editor_script' => 'gutenberg-examples-dynamic',
-	// 		'render_callback' => 'gutenberg_examples_dynamic_render_callback'
-	// 	));
-	// }
-	// add_action('init', 'gutenberg_examples_dynamic');
+	// Dynamic menu render
+	function gb_blocks_menu_render_callback( $block_attributes, $content ) {
+		$html = '';
+
+		if( isset( $block_attributes['menu'] ) && !empty( $block_attributes['menu'] ) ) {
+			// Render menu
+			$html .= '<nav class="wp-block wp-block-gb-menu">';
+				$html .= gb_blocks_menu_nav( array ( 
+					'theme_location' => $block_attributes['menu'],
+					'echo' => false
+				) );
+			$html .= '<nav class="wp-block-gb-menu">';
+		}
+		
+		return $html;
+	}
+
+	// Render menu with args
+	function gb_blocks_menu_nav( $args = array() ) {
+		$defaults = array(
+			'theme_location'  => 'header-menu',
+			'menu'            => '',
+			'container'       => false,
+			'container_class' => 'menu-container',
+			'container_id'    => '',
+			'menu_class'      => 'menu',
+			'menu_id'         => '',
+			'echo'            => true,
+			'fallback_cb'     => 'wp_page_menu',
+			'before'          => '',
+			'after'           => '',
+			'link_before'     => '',
+			'link_after'      => '<span class="mobile-only expander"></span>',
+			'items_wrap'      => '<ul>%3$s</ul>',
+			'depth'           => 2,
+			'walker'          => ''
+		);
+
+		// merge args
+		$_args = wp_parse_args($args, $defaults);
+
+		// generate menu
+		if( $_args['echo'] === false ) {
+			return wp_nav_menu( $_args );
+		}
+		wp_nav_menu( $_args );
+	}
