@@ -32,5 +32,6 @@
 	// Blocks
 	require_once GB_BLOCK__PLUGIN_DIR . 'src/menu/menu.php';
 	require_once GB_BLOCK__PLUGIN_DIR . 'src/map/map.php';
+	require_once GB_BLOCK__PLUGIN_DIR . 'src/posts/posts.php';
 
 	// require_once plugin_dir_path( __FILE__ ) . 'src/init.php';

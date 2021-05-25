@@ -11,3 +11,4 @@
 
 import './menu/menu.js';
 import './map/map.js';
+import './posts/posts.js';

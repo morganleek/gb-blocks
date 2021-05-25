@@ -29,7 +29,6 @@
 				'siteMenus' => $keyValueMenus
 			]
 		);
-
 	}
 
 	// Hook: Block assets
