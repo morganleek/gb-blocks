@@ -20,6 +20,10 @@ registerBlockType( 'gb/block-posts', {
 		__( 'Appearance' ),
 	],
 	attributes: {
+		isInPostFetch: {
+			type: 'boolean', 
+			default: false
+		},
 		postType: {
 			type: 'string',
 			default: null
@@ -44,6 +48,10 @@ registerBlockType( 'gb/block-posts', {
 			type: 'string',
 			default: ""
 		},
+		callbackFunction: {
+			type: 'string',
+			default: ''
+		}
 	},
 
 	edit: ( props ) => {
@@ -53,43 +61,46 @@ registerBlockType( 'gb/block-posts', {
 
 		let blockRender;
 		if( attributes.postType ) {
-			const blockRender = <ServerSideRender
+			blockRender = <ServerSideRender
 				block="gb/block-posts"
 				attributes={ { 
 					post_type: attributes.postType,
 					limit: attributes.limit,
 					taxonomy: attributes.taxonomy,
-					term_slug: attributes.termSlug
+					term_slug: attributes.termSlug,
+					callback_function: attributes.callbackFunction
 				} }
-			/>	
+			/>
 		}
 		else {
 			blockRender = <p>Select a post type.</p>
 			// Get post types
-			wp.apiFetch({
-				path: '/wp/v2/types',
-			}).then(data => {
-				let postTypesTemp = [ { value: null, label: 'Select a post type' } ];
-				for (const [key, value] of Object.entries( data )) {
-					postTypesTemp.push( { label: value.name, value: key } );
-				}
-				setAttributes( { postTypesAvailable: postTypesTemp } );
-			});
+			if( !attributes.isInPostFetch ) {
+				// Fetch once
+				setAttributes( { isInPostFetch: true } );
+				wp.apiFetch({
+					path: '/wp/v2/types',
+				}).then(data => {
+					let postTypesTemp = [ { value: null, label: 'Select a post type' } ];
+					for (const [key, value] of Object.entries( data )) {
+						postTypesTemp.push( { label: value.name, value: key } );
+					}
+					setAttributes( { postTypesAvailable: postTypesTemp } );
+				});
+			}
 		}
 
 		const onUpdatePostType = ( newPostType ) => {
 			setAttributes( { postType: newPostType } );
 			// Get post type taxonomies
 			wp.apiFetch({
-				path: '/wp/v2/types/' . attributes.postType,
+				path: '/wp/v2/types/' + newPostType,
 				context: 'view',
 			}).then(data => {
-				console.log( data );
-				// let taxonomyTemp = [ { value: null, label: 'All taxonomies' } ];
-				// for (const [key, value] of Object.entries( data )) {
-				// 	taxonomyTemp.push( { label: value.name, value: key } );
-				// }
-				// setAttributes( { postTypesAvailable: postTypesTemp } );
+				
+				let taxonomyTemp = [ { value: null, label: 'All taxonomies' } ];
+				data.taxonomies.forEach( tax => taxonomyTemp.push( { value: tax, label: ( tax[0].toUpperCase() + tax.substr( 1 ) ).replaceAll( '_', ' ' ) } ) );
+				setAttributes( { taxonomiesAvailable: taxonomyTemp } );
 			});
 		};
 
@@ -100,49 +111,46 @@ registerBlockType( 'gb/block-posts', {
 		return (
 			<div { ... blockProps }>
 				<InspectorControls>
-					<Panel>
-						<PanelBody title="Posts Settings" icon={ more } initialOpen={ true }>
-							<PanelRow>
-								<TextControl
-									label="Post limit"
-									value={ attributes.limit }
-									onChange={ ( newLimit ) => setAttributes( { limit: newLimit } ) }
-								/>
-							</PanelRow>
+					<PanelBody title="Posts Settings" icon={ more } initialOpen={ true }>
+						<div>
+							<TextControl
+								label="Post limit"
+								value={ attributes.limit }
+								onChange={ ( newLimit ) => setAttributes( { limit: newLimit } ) }
+							/>
+							<TextControl
+								label="Layout callback function"
+								value={ attributes.callbackFunction }
+								onChange={ ( newCallbackFunction ) => setAttributes( { callbackFunction: newCallbackFunction } ) }
+							/>
 							{ attributes.postTypesAvailable
-								? <PanelRow>
-									<SelectControl 
+								? <SelectControl 
 										label={ __( 'Select a post type: ' ) }
 										onChange={ onUpdatePostType }
 										value={ attributes.postType }
 										options={ attributes.postTypesAvailable }
 									/>
-								</PanelRow>
 								: <p>Loading&hellip;</p>
 							}
 							{ attributes.taxonomiesAvailable
-								? <PanelRow>
-									<SelectControl 
+								? <SelectControl 
 										label={ __( 'Select a taxonomy: ' ) }
 										onChange={ onUpdateTaxonomy }
 										value={ attributes.taxonomy }
 										options={ attributes.taxonomiesAvailable }
 									/>
-								</PanelRow>
 								: <p></p>
 							}
 							{ attributes.taxonomy 
-								? <PanelRow>
-									<TextControl
+								? <TextControl
 										label="Term"
 										value={ attributes.termSlug }
 										onChange={ ( newTermSlug ) => setAttributes( { termSlug: newTermSlug } ) }
 									/>
-								</PanelRow>
 								: <p></p>
 							}
-						</PanelBody>
-					</Panel>
+						</div>
+					</PanelBody>
 				</InspectorControls>
 				{ blockRender }
 			</div>
