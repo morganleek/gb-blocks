@@ -23,11 +23,12 @@
  * that are used across the project.
 */
 .wp-block.wp-block-gb-map {
-  width: 100%;
-  min-height: 300px;
   background: lightblue; }
   .wp-block.wp-block-gb-map pre {
     padding: 5px 10px; }
+  .wp-block.wp-block-gb-map #map {
+    width: 100%;
+    height: 300px; }
 /**
  * #.# Common SCSS
  *

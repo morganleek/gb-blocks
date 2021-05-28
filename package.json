@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@wordpress/icons": "^4.0.0",
-    "cgb-scripts": "1.23.1"
+    "cgb-scripts": "1.23.1",
+    "load-google-maps-api": "^2.0.2"
   }
 }

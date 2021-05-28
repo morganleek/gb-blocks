@@ -36,6 +36,10 @@ registerBlockType( 'gb/block-map', {
 			type: 'string',
 			default: "128.0"
 		},
+		title: {
+			type: 'string',
+			default: ''
+		}
 	},
 
 	edit: ( props ) => {
@@ -51,7 +55,8 @@ registerBlockType( 'gb/block-map', {
 				key: attributes.key,
 				zoom: attributes.zoom,
 				lat: attributes.lat,
-				lng: attributes.lng
+				lng: attributes.lng,
+				title: attributes.title
 			} }
 		/>
 		// }
@@ -90,6 +95,13 @@ registerBlockType( 'gb/block-map', {
 									label="Lng"
 									value={ attributes.lng }
 									onChange={ ( newLng ) => setAttributes( { lng: newLng } ) }
+								/>
+							</PanelRow>
+							<PanelRow>
+								<TextControl
+									label="Title"
+									value={ attributes.title }
+									onChange={ ( newtitle ) => setAttributes( { title: newtitle } ) }
 								/>
 							</PanelRow>
 						</PanelBody>
