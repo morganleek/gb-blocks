@@ -13,7 +13,7 @@ const { more } = '@wordpress/icons';
 registerBlockType( 'gb/block-map', {
 	apiVersion: 2,
 	title: __( 'Map' ), 
-	icon: 'sticky', 
+	icon: 'admin-site-alt2', 
 	category: 'common', 
 	keywords: [
 		__( 'Map' ),
