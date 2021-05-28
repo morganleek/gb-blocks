@@ -12,7 +12,7 @@
 			'style'         => 'gb-blocks-style-css',
 			'editor_script' => 'gb-blocks-block-js',
 			'editor_style'  => 'gb-blocks-block-editor-css',
-			'render_callback' => 'gb_blocks_map_render_callback',
+			// 'render_callback' => 'gb_blocks_map_render_callback',
 			'attributes' => array(
 				'key' => array(
 					'type' => 'string',
@@ -50,25 +50,33 @@
 					isset( $block_attributes['lng'] ) 
 			) {
 				
+				
+
 				// $id = get_the_ID();
-				$html .= '<div id="map"></div>';
+				$html .= '<div id="map"
+					data-key="' . $block_attributes['key'] . '"
+					data-lat="' . $block_attributes['lat'] . '"
+					data-lng="' . $block_attributes['lng'] . '"
+					data-zoom="' . $block_attributes['zoom'] . '"
+					data-title="' . $block_attributes['title'] . '"
+					></div>';
 
-				$html .= '<script type="text/javascript">
-					function initMap() {
-						const center = {lat: ' . $block_attributes['lat'] . ', lng: ' . $block_attributes['lng'] . '};
-						map = new google.maps.Map(document.getElementById(\'map\'), {
-							center: center,
-							zoom: ' . $block_attributes['zoom'] . '
-						});
+				// $html .= '<script type="text/javascript">
+				// 	function initMap() {
+				// 		const center = {lat: ' . $block_attributes['lat'] . ', lng: ' . $block_attributes['lng'] . '};
+				// 		map = new google.maps.Map(document.getElementById(\'map\'), {
+				// 			center: center,
+				// 			zoom: ' . $block_attributes['zoom'] . '
+				// 		});
 
-						new google.maps.Marker({
-							position: center,
-							map,
-							label: "' . $block_attributes['title'] . '",
-						});
-					}
-				</script>';
-				$html .= '<script src="https://maps.googleapis.com/maps/api/js?key=' . $block_attributes['key'] . '&callback=initMap&libraries=&v=weekly" async ></script>';
+				// 		new google.maps.Marker({
+				// 			position: center,
+				// 			map,
+				// 			label: "' . $block_attributes['title'] . '",
+				// 		});
+				// 	}
+				// </script>';
+				// $html .= '<script src="https://maps.googleapis.com/maps/api/js?key=' . $block_attributes['key'] . '&callback=initMap&libraries=&v=weekly" async ></script>';
 				
 			}
 			else {
@@ -78,3 +86,11 @@
 
 		return $html;		
 	}
+
+	function gb_blocks_map_enqueue_if_present() {
+		if( has_block( 'gb/block-map' ) ) {
+			wp_enqueue_script( 'gb_block_map', GB_BLOCK__PLUGIN_URL . 'src/map/_maps-frontend.js', array(), '1.0.4' );
+		}
+	}
+
+	add_action( 'enqueue_block_assets', 'gb_blocks_map_enqueue_if_present' );

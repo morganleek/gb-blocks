@@ -1,6 +1,8 @@
 import './editor.scss';
 import './style.scss';
 
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+
 const { __ } = wp.i18n; 
 const { registerBlockType } = wp.blocks; 
 const { useBlockProps, InspectorControls } = wp.blockEditor;
@@ -63,7 +65,27 @@ registerBlockType( 'gb/block-map', {
 		// else {
 		// 	blockRender = <p>Enter a key, zoom, lat and lng.</p>
 		// }
-		
+
+		const center = {
+			lat: ( attributes.lat ) ? parseFloat( attributes.lat ) : 0,
+			lng: ( attributes.lng ) ? parseFloat( attributes.lng ) : 0,
+		}
+		const marker = <Marker position={ center } label={ attributes.label } />
+		let map = ( attributes.key ) ?
+			<div class="map-wrapper">
+				<LoadScript
+					googleMapsApiKey={ attributes.key }
+				>
+					<GoogleMap
+						center={ center }
+						zoom={ ( attributes.zoom ) ? parseFloat( attributes.zoom ) : 12 }
+					>
+						{ marker }
+					</GoogleMap>
+				</LoadScript> 
+			</div> :
+			<p>Enter a valid API key</p>;
+
 		return (
 			<div { ... blockProps }>
 				<InspectorControls>
@@ -107,7 +129,28 @@ registerBlockType( 'gb/block-map', {
 						</PanelBody>
 					</Panel>
 				</InspectorControls>
-				{ blockRender }
+				{ map }
+			</div>
+		);
+	},
+	save: ( props ) => {
+		const { attributes } = props;
+		const blockProps = useBlockProps.save();
+
+		const center = {
+			lat: ( attributes.lat ) ? parseFloat( attributes.lat ) : 0,
+			lng: ( attributes.lng ) ? parseFloat( attributes.lng ) : 0,
+		}
+		const marker = <Marker position={ center } label={ attributes.label } />
+		let map = ( attributes.key ) ?
+			<div class="map-wrapper">
+				<p>Hello</p>
+			</div> :
+			<p>Enter a valid API key</p>;
+
+		return (
+			<div { ... blockProps }>
+				<div class="gb-map" data-key={ attributes.key } data-lat={ attributes.lat } data-lng={ attributes.lng } data-zoom={ attributes.zoom } data-title={ attributes.title } ></div>
 			</div>
 		);
 	}

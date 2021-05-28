@@ -8,3 +8,20 @@
     height: 300px;
 	}
 }
+
+
+.wp-block-gb-block-map {
+	.map-wrapper {
+		& > div {
+			width: 100%;
+			height: 300px;
+			&:empty {
+				height: 0;
+			}
+		}
+	}	
+	.gb-map {
+		width: 100%;
+		height: 300px;
+	}
+}
