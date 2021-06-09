@@ -12,8 +12,8 @@
 			'gb-blocks-style-css', GB_BLOCK__PLUGIN_URL . 'dist/blocks.style.build.css', is_admin() ? array( 'wp-editor' ) : null, null 
 		);
 
-		wp_register_script( 'gb-blocks-block-js', GB_BLOCK__PLUGIN_URL . '/dist/blocks.build.js', array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor' ), null, true );
-		wp_register_style( 'gb-blocks-block-editor-css', GB_BLOCK__PLUGIN_URL . 'dist/blocks.editor.build.css', array( 'wp-edit-blocks' ), null );
+		wp_register_script( 'gb-blocks-block-js', GB_BLOCK__PLUGIN_URL . '/dist/blocks.build.js', array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor' ), GB_BLOCK__VERSION, true );
+		wp_register_style( 'gb-blocks-block-editor-css', GB_BLOCK__PLUGIN_URL . 'dist/blocks.editor.build.css', array( 'wp-edit-blocks' ), GB_BLOCK__VERSION );
 
 		// Menus for scripts
 		$keyValueMenus = [];
