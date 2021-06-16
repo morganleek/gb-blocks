@@ -64,11 +64,11 @@ registerBlockType( 'gb/block-posts', {
 			blockRender = <ServerSideRender
 				block="gb/block-posts"
 				attributes={ { 
-					post_type: attributes.postType,
+					postType: attributes.postType,
 					limit: attributes.limit,
 					taxonomy: attributes.taxonomy,
-					term_slug: attributes.termSlug,
-					callback_function: attributes.callbackFunction
+					termSlug: attributes.termSlug,
+					callbackFunction: attributes.callbackFunction
 				} }
 			/>
 		}

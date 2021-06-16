@@ -13,25 +13,20 @@
 			'editor_style'  => 'gb-blocks-block-editor-css',
 			'render_callback' => 'gb_blocks_posts_render_callback',
 			'attributes' => array(
-				'post_type' => array(
-					'type' => 'string',
-					'default' => 'post'
+				'postType' => array(
+					'type' => 'string'
 				),
 				'limit' => array(
-					'type' => 'string',
-					'default' => '10'
+					'type' => 'string'
 				),
 				'taxonomy' => array(
-					'type' => 'string', 
-					'default' => 'category'
+					'type' => 'string'
 				),
-				'term_slug' => array(
-					'type' => 'string', 
-					'default' => 'uncategorized'
+				'termSlug' => array(
+					'type' => 'string'
 				),
-				'callback_function' => array(
-					'type' => 'string',
-					'default' => ''
+				'callbackFunction' => array(
+					'type' => 'string'
 				)
 			)
 		) );
@@ -42,13 +37,13 @@
 	function gb_blocks_posts_render_callback( $block_attributes, $content ) {
 		$html = '';
 
+		// $html .= '<pre>' . print_r( $block_attributes,  true ) . '</pre>';
 		$html .= '<div class="wp-block wp-block-gb-block-posts">';
-			if( isset( $block_attributes['post_type'] ) ) {
-
-				if( function_exists( $block_attributes['callback_function'] ) ) {
-
+			if( isset( $block_attributes['postType'] ) ) {
+				if( function_exists( $block_attributes['callbackFunction'] ) ) {
+					
 					$args = array( 
-						'post_type' => $block_attributes['post_type']
+						'post_type' => $block_attributes['postType']
 					);
 					if( isset( $block_attributes['limit'] ) ) {
 						$args['posts_per_page'] = $block_attributes['limit'];
@@ -56,7 +51,7 @@
 					if( isset( $block_attributes['taxonomy'] ) ) {
 						$args['category_name'] = $block_attributes['taxonomy'];
 					}
-					if( isset( $block_attributes['taxonomy'] ) && isset( $block_attributes['term_slug'] ) ) {
+					if( isset( $block_attributes['taxonomy'] ) && isset( $block_attributes['termSlug'] ) ) {
 						// Remove category if there is a term
 						unset( $args['category_name'] );
 						// Search by term
@@ -64,7 +59,7 @@
 							array(
 								'taxonomy' => $block_attributes['taxonomy'],
 								'field'    => 'slug',
-								'terms'    => $block_attributes['term_slug']
+								'terms'    => $block_attributes['termSlug']
 							),
 						);
 					}
@@ -75,7 +70,7 @@
 							while ( $posts_query->have_posts() ) {
 								$posts_query->the_post();
 								$html .= '<li>';
-									$html .= call_user_func( $block_attributes['callback_function'] );
+									$html .= call_user_func( $block_attributes['callbackFunction'] );
 								$html .= '</li>';
 							}
 						$html .= '</ul>';
