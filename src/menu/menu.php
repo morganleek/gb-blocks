@@ -38,7 +38,7 @@
 					'theme_location' => $block_attributes['menu'],
 					'echo' => false
 				) );
-			$html .= '<nav class="wp-block-gb-menu">';
+			$html .= '</nav>';
 		}
 		
 		return $html;
@@ -54,7 +54,7 @@
 			'container_id'    => '',
 			'menu_class'      => 'menu',
 			'menu_id'         => '',
-			'echo'            => true,
+			'echo'            => false,
 			'fallback_cb'     => 'wp_page_menu',
 			'before'          => '',
 			'after'           => '',
