@@ -13,14 +13,23 @@
 			'editor_style'  => 'gb-blocks-block-editor-css',
 			'render_callback' => 'gb_blocks_posts_render_callback',
 			'attributes' => array(
+				'isInPostFetch' => array(
+					'type' => 'string'
+				),
 				'postType' => array(
 					'type' => 'string'
+				),
+				'postTypesAvailable' => array(
+					'type' => 'array'
 				),
 				'limit' => array(
 					'type' => 'string'
 				),
 				'taxonomy' => array(
 					'type' => 'string'
+				),
+				'taxonomiesAvailable' => array(
+					'type' => 'array'
 				),
 				'termSlug' => array(
 					'type' => 'string'
@@ -35,9 +44,11 @@
 	add_action( 'init', 'gb_blocks_posts_init', 55 );
 
 	function gb_blocks_posts_render_callback( $block_attributes, $content ) {
+		
 		$html = '';
+		
+		// return '<pre>' . print_r( $block_attributes, true ) . '</pre>';
 
-		// $html .= '<pre>' . print_r( $block_attributes,  true ) . '</pre>';
 		$html .= '<div class="wp-block wp-block-gb-block-posts">';
 			if( isset( $block_attributes['postType'] ) ) {
 				if( function_exists( $block_attributes['callbackFunction'] ) ) {
@@ -78,11 +89,11 @@
 					wp_reset_postdata();
 				}
 				else {
-					$html .= '<p>No post type set</p>';
+					$html .= '<p>Callback function either not set or doesn\'t exist</p>';
 				}
 			}
 			else {
-				$html .= '<p>Callback function either not set or doesn\'t exist</p>';
+				$html .= '<p>No post type set</p>';
 			}
 			// $html .= ___( $block_attributes, true );
 		$html .= '</div>';

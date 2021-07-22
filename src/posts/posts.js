@@ -59,35 +59,42 @@ registerBlockType( 'gb/block-posts', {
 
 		const blockProps = useBlockProps();
 
+		// Get post types
+		if( !attributes.isInPostFetch ) {
+			// Fetch once
+			setAttributes( { isInPostFetch: true } );
+			wp.apiFetch({
+				path: '/wp/v2/types',
+			} ).then( data => {
+				let postTypesTemp = [ { value: null, label: 'Select a post type' } ];
+				for (const [key, value] of Object.entries( data )) {
+					postTypesTemp.push( { label: value.name, value: key } );
+				}
+				setAttributes( { postTypesAvailable: postTypesTemp } );
+			} );
+		}
+
 		let blockRender;
-		if( attributes.postType ) {
-			blockRender = <ServerSideRender
-				block="gb/block-posts"
-				attributes={ { 
-					postType: attributes.postType,
-					limit: attributes.limit,
-					taxonomy: attributes.taxonomy,
-					termSlug: attributes.termSlug,
-					callbackFunction: attributes.callbackFunction
-				} }
-			/>
+		if( attributes ) {
+			if( attributes.postType ) {
+				let { postType } = attributes;
+				blockRender = <ServerSideRender
+					block="gb/block-posts"
+					attributes={ { 
+						postType: attributes.postType,
+						limit: attributes.limit,
+						taxonomy: attributes.taxonomy,
+						termSlug: attributes.termSlug,
+						callbackFunction: attributes.callbackFunction
+					} }
+				/>
+			}
+			else {
+				blockRender = <p>Selected post type, term and term name.</p>
+			}
 		}
 		else {
-			blockRender = <p>Select a post type.</p>
-			// Get post types
-			if( !attributes.isInPostFetch ) {
-				// Fetch once
-				setAttributes( { isInPostFetch: true } );
-				wp.apiFetch({
-					path: '/wp/v2/types',
-				}).then(data => {
-					let postTypesTemp = [ { value: null, label: 'Select a post type' } ];
-					for (const [key, value] of Object.entries( data )) {
-						postTypesTemp.push( { label: value.name, value: key } );
-					}
-					setAttributes( { postTypesAvailable: postTypesTemp } );
-				});
-			}
+			blockRender = <p>Loading...</p>
 		}
 
 		const onUpdatePostType = ( newPostType ) => {
@@ -96,8 +103,7 @@ registerBlockType( 'gb/block-posts', {
 			wp.apiFetch({
 				path: '/wp/v2/types/' + newPostType,
 				context: 'view',
-			}).then(data => {
-				
+			}).then(data => {	
 				let taxonomyTemp = [ { value: null, label: 'All taxonomies' } ];
 				data.taxonomies.forEach( tax => taxonomyTemp.push( { value: tax, label: ( tax[0].toUpperCase() + tax.substr( 1 ) ).replaceAll( '_', ' ' ) } ) );
 				setAttributes( { taxonomiesAvailable: taxonomyTemp } );

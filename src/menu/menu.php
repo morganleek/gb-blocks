@@ -17,6 +17,9 @@
 					'type' => 'string',
 					'default' => ''
 				),
+				'menusAvailable' => array(
+					'type' => 'array'
+				),
 				'className' => array(
 					'type' => 'string',
 					'default' => ''
@@ -27,9 +30,17 @@
 
 	add_action( 'init', 'gb_block_menu_init', 55 );
 
+	// function _gb_wp_nav_menu_args( $args ) {
+	// 	print '<pre>' . print_r( $args, true ) . '</pre>';
+	// }
+	// add_filter( 'wp_nav_menu_args', '_gb_wp_nav_menu_args', 10, 1 );
+
 	// Dynamic menu render
 	function gb_blocks_menu_render_callback( $block_attributes, $content ) {
 		$html = '';
+
+		// global $post;
+		// $html .= '<pre>' . print_r($post, true) . '</pre>';
 
 		if( isset( $block_attributes['menu'] ) && !empty( $block_attributes['menu'] ) ) {
 			// Render menu
