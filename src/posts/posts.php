@@ -28,6 +28,9 @@
 				'taxonomy' => array(
 					'type' => 'string'
 				),
+				'taxonomyFilter' => array(
+					'type' => 'string'
+				),
 				'taxonomiesAvailable' => array(
 					'type' => 'array'
 				),
@@ -50,8 +53,9 @@
 		// return '<pre>' . print_r( $block_attributes, true ) . '</pre>';
 
 		$html .= '<div class="wp-block wp-block-gb-block-posts">';
-			if( isset( $block_attributes['postType'] ) ) {
-				if( function_exists( $block_attributes['callbackFunction'] ) ) {
+		if( isset( $block_attributes['postType'] ) ) {
+			if( function_exists( $block_attributes['callbackFunction'] ) ) {
+					
 					
 					$args = array( 
 						'post_type' => $block_attributes['postType']
@@ -62,7 +66,7 @@
 					if( isset( $block_attributes['taxonomy'] ) ) {
 						$args['category_name'] = $block_attributes['taxonomy'];
 					}
-					if( isset( $block_attributes['taxonomy'] ) && isset( $block_attributes['termSlug'] ) ) {
+					if( !empty( $block_attributes['taxonomy'] ) && !empty( $block_attributes['termSlug'] ) ) {
 						// Remove category if there is a term
 						unset( $args['category_name'] );
 						// Search by term
@@ -74,13 +78,38 @@
 							),
 						);
 					}
-
+					
 					$posts_query = new WP_Query( $args );
 					if ( $posts_query->have_posts() ) {
+						if( !empty( $block_attributes['taxonomyFilter'] ) ) {
+							$terms = get_terms( array( 'taxonomy' => $block_attributes['taxonomyFilter'] ) );
+							if( $terms ) {
+								$html .= '<ul class="terms-filter">';
+									$html .= '<li data-slug="*"><a href="#">Show All</a></li>';
+									foreach( $terms as $term ) {
+										$html .= '<li data-slug="' . $term->slug . '">';
+											$html .= '<a href="#">' . $term->name . '</a>';
+										$html .= '</li>';
+									}
+								$html .= '</ul>';
+							}
+						}
+
 						$html .= '<ul>';
 							while ( $posts_query->have_posts() ) {
 								$posts_query->the_post();
-								$html .= '<li>';
+
+								// Categories for filtering
+								$categories = [];
+								if( $terms = get_the_terms( get_the_ID(), 'category' ) ) {
+									foreach( $terms as $term ) {
+										$categories[] = 'category-' . $term->slug;
+									}
+								}
+
+								$html .= '<li class="gb-post-list-item gb-post-id-' . get_the_ID() . '" ';
+									$html .= ( !empty( $categories ) ) ? 'data-categories="' . implode( " ", $categories ) . '" ' : '';
+								$html .= '>';
 									$html .= call_user_func( $block_attributes['callbackFunction'] );
 								$html .= '</li>';
 							}

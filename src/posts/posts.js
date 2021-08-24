@@ -48,6 +48,10 @@ registerBlockType( 'gb/block-posts', {
 			type: 'string',
 			default: ""
 		},
+		taxonomyFilter: {
+			type: 'string',
+			default: ""
+		},
 		callbackFunction: {
 			type: 'string',
 			default: ''
@@ -84,6 +88,7 @@ registerBlockType( 'gb/block-posts', {
 						postType: attributes.postType,
 						limit: attributes.limit,
 						taxonomy: attributes.taxonomy,
+						taxonomyFilter: attributes.taxonomyFilter,
 						termSlug: attributes.termSlug,
 						callbackFunction: attributes.callbackFunction
 					} }
@@ -112,6 +117,10 @@ registerBlockType( 'gb/block-posts', {
 
 		const onUpdateTaxonomy = ( newTaxonomy ) => {
 			setAttributes( { taxonomy: newTaxonomy } );
+		}
+
+		const onUpdateTaxonomyFilter = ( newTaxonomy ) => {
+			setAttributes( { taxonomyFilter: newTaxonomy } );
 		}
 		
 		return (
@@ -152,6 +161,19 @@ registerBlockType( 'gb/block-posts', {
 										label="Term"
 										value={ attributes.termSlug }
 										onChange={ ( newTermSlug ) => setAttributes( { termSlug: newTermSlug } ) }
+									/>
+								: <p></p>
+							}
+						</div>
+					</PanelBody>
+					<PanelBody title="Filters Settings" icon={ more } initialOpen={ true }>
+						<div>
+							{ attributes.taxonomiesAvailable
+								? <SelectControl 
+										label={ __( 'Filter by taxonomy: ' ) }
+										onChange={ onUpdateTaxonomyFilter }
+										value={ attributes.taxonomyFilter }
+										options={ attributes.taxonomiesAvailable }
 									/>
 								: <p></p>
 							}
