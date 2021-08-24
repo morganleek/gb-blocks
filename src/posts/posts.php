@@ -49,18 +49,16 @@
 	function gb_blocks_posts_render_callback( $block_attributes, $content ) {
 		
 		$html = '';
+
+		$block_attributes = apply_filters( 'gb-posts-before-attributes', $block_attributes );
 		
 		// return '<pre>' . print_r( $block_attributes, true ) . '</pre>';
 
 		$html .= '<div class="wp-block wp-block-gb-block-posts">';
 		if( isset( $block_attributes['postType'] ) ) {
 			if( function_exists( $block_attributes['callbackFunction'] ) ) {
-					
-					
 					$args = array( 
 						'post_type' => $block_attributes['postType'],
-						'orderby' => 'menu_order',
-						'order' => 'ASC'
 					);
 					if( isset( $block_attributes['limit'] ) ) {
 						$args['posts_per_page'] = $block_attributes['limit'];
@@ -80,6 +78,8 @@
 							),
 						);
 					}
+
+					$args = apply_filters( 'gb-posts-before-query', $args, $block_attributes );
 					
 					$posts_query = new WP_Query( $args );
 					if ( $posts_query->have_posts() ) {
@@ -128,6 +128,8 @@
 			}
 			// $html .= ___( $block_attributes, true );
 		$html .= '</div>';
+
+		$html = apply_filters( 'gb-before-render', $html );
 
 		return $html;		
 	}
