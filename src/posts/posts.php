@@ -85,7 +85,7 @@
 							$terms = get_terms( array( 'taxonomy' => $block_attributes['taxonomyFilter'] ) );
 							if( $terms ) {
 								$html .= '<ul class="terms-filter">';
-									$html .= '<li data-slug="*"><a href="#">Show All</a></li>';
+									$html .= '<li data-slug="*" class="current-filter"><a href="#">Show All</a></li>';
 									foreach( $terms as $term ) {
 										$html .= '<li data-slug="' . $term->slug . '">';
 											$html .= '<a href="#">' . $term->name . '</a>';
