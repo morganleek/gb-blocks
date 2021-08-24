@@ -58,7 +58,9 @@
 					
 					
 					$args = array( 
-						'post_type' => $block_attributes['postType']
+						'post_type' => $block_attributes['postType'],
+						'orderby' => 'menu_order',
+						'order' => 'ASC'
 					);
 					if( isset( $block_attributes['limit'] ) ) {
 						$args['posts_per_page'] = $block_attributes['limit'];
