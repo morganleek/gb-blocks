@@ -84,7 +84,9 @@
 					$posts_query = new WP_Query( $args );
 					if ( $posts_query->have_posts() ) {
 						if( !empty( $block_attributes['taxonomyFilter'] ) ) {
-							$terms = get_terms( array( 'taxonomy' => $block_attributes['taxonomyFilter'] ) );
+							$terms_args = apply_filters( 'gb-posts-before-filters-query', array( 'taxonomy' => $block_attributes['taxonomyFilter'] ) );
+							
+							$terms = get_terms( $terms_args );
 							if( $terms ) {
 								$html .= '<ul class="terms-filter">';
 									$html .= '<li data-slug="*" class="current-filter"><a href="#">Show All</a></li>';
