@@ -90,7 +90,8 @@ registerBlockType( 'gb/block-posts', {
 						taxonomy: attributes.taxonomy,
 						taxonomyFilter: attributes.taxonomyFilter,
 						termSlug: attributes.termSlug,
-						callbackFunction: attributes.callbackFunction
+						callbackFunction: attributes.callbackFunction,
+						className: attributes.className
 					} }
 				/>
 			}

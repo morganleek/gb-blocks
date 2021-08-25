@@ -39,6 +39,9 @@
 				),
 				'callbackFunction' => array(
 					'type' => 'string'
+				),
+				'className' => array(
+					'type' => 'string'
 				)
 			)
 		) );
@@ -53,8 +56,15 @@
 		$block_attributes = apply_filters( 'gb-posts-before-attributes', $block_attributes );
 		
 		// return '<pre>' . print_r( $block_attributes, true ) . '</pre>';
+		$class_names = array(
+			'wp-block',
+			'wp-block-gb-block-posts'
+		);
+		if( isset( $block_attributes['className'] ) ) {
+			$class_names[] = $block_attributes['className'];
+		}
 
-		$html .= '<div class="wp-block wp-block-gb-block-posts">';
+		$html .= '<div class="' . implode(' ', $class_names ) . '">';
 		if( isset( $block_attributes['postType'] ) ) {
 			if( function_exists( $block_attributes['callbackFunction'] ) ) {
 					$args = array( 
@@ -84,8 +94,8 @@
 					$posts_query = new WP_Query( $args );
 					if ( $posts_query->have_posts() ) {
 						if( !empty( $block_attributes['taxonomyFilter'] ) ) {
+							// Filter query out to devs
 							$terms_args = apply_filters( 'gb-posts-before-filters-query', array( 'taxonomy' => $block_attributes['taxonomyFilter'] ) );
-							
 							$terms = get_terms( $terms_args );
 							if( $terms ) {
 								$html .= '<ul class="terms-filter">';
