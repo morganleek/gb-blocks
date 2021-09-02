@@ -24,7 +24,7 @@ registerBlockType( 'gb/block-map', {
 	attributes: {
 		key: {
 			type: 'string',
-			default: "Key"
+			default: "Key" 
 		},
 		zoom: {
 			type: 'string',
@@ -41,6 +41,20 @@ registerBlockType( 'gb/block-map', {
 		title: {
 			type: 'string',
 			default: ''
+		},
+		mediaType: {
+			type: 'string',
+		},
+		mediaUrl: {
+			type: 'string',
+		},
+		iconWidth: {
+			type: 'string',
+			default: "32"
+		},
+		iconHeight: {
+			type: 'string',
+			default: "32"
 		}
 	},
 
@@ -58,7 +72,10 @@ registerBlockType( 'gb/block-map', {
 				zoom: attributes.zoom,
 				lat: attributes.lat,
 				lng: attributes.lng,
-				title: attributes.title
+				title: attributes.title,
+				mediaUrl: attributes.mediaUrl,
+				iconWidth: attributes.iconWidth,
+				iconHeight: attributes.iconHeight
 			} }
 		/>
 		// }
@@ -89,45 +106,48 @@ registerBlockType( 'gb/block-map', {
 		return (
 			<div { ... blockProps }>
 				<InspectorControls>
-					<Panel>
-						<PanelBody title="Map Settings" icon={ more } initialOpen={ true }>
-							<PanelRow>
-								<TextControl
-									label="Key"
-									value={ attributes.key }
-									onChange={ ( newKey ) => setAttributes( { key: newKey } ) }
-								/>
-							</PanelRow>
-							<PanelRow>
-								<TextControl
-									label="Zoom"
-									value={ attributes.zoom }
-									onChange={ ( newZoom ) => setAttributes( { zoom: newZoom } ) }
-								/>
-							</PanelRow>
-							<PanelRow>
-								<TextControl
-									label="Lat"
-									value={ attributes.lat }
-									onChange={ ( newLat ) => setAttributes( { lat: newLat } ) }
-								/>
-							</PanelRow>
-							<PanelRow>
-								<TextControl
-									label="Lng"
-									value={ attributes.lng }
-									onChange={ ( newLng ) => setAttributes( { lng: newLng } ) }
-								/>
-							</PanelRow>
-							<PanelRow>
-								<TextControl
-									label="Title"
-									value={ attributes.title }
-									onChange={ ( newtitle ) => setAttributes( { title: newtitle } ) }
-								/>
-							</PanelRow>
-						</PanelBody>
-					</Panel>
+					<PanelBody title="Map Settings" icon={ more } initialOpen={ true }>
+						<TextControl
+							label="Key"
+							value={ attributes.key }
+							onChange={ ( newKey ) => setAttributes( { key: newKey } ) }
+						/>
+						<TextControl
+							label="Zoom"
+							value={ attributes.zoom }
+							onChange={ ( newZoom ) => setAttributes( { zoom: newZoom } ) }
+						/>
+						<TextControl
+							label="Lat"
+							value={ attributes.lat }
+							onChange={ ( newLat ) => setAttributes( { lat: newLat } ) }
+						/>
+						<TextControl
+							label="Lng"
+							value={ attributes.lng }
+							onChange={ ( newLng ) => setAttributes( { lng: newLng } ) }
+						/>
+						<TextControl
+							label="Title"
+							value={ attributes.title }
+							onChange={ ( newtitle ) => setAttributes( { title: newtitle } ) }
+						/>
+						<TextControl
+							label="Icon URL"
+							value={ attributes.mediaUrl }
+							onChange={ ( newUrl ) => setAttributes( { mediaUrl: newUrl } ) }
+						/>
+						<TextControl
+							label="Icon Width"
+							value={ attributes.iconWidth }
+							onChange={ ( newWidth ) => setAttributes( { iconWidth: newWidth } ) }
+						/>
+						<TextControl
+							label="Icon Height"
+							value={ attributes.iconHeight }
+							onChange={ ( newHeight ) => setAttributes( { iconHeight: newHeight } ) }
+						/>
+					</PanelBody>
 				</InspectorControls>
 				{ map }
 			</div>
@@ -150,7 +170,16 @@ registerBlockType( 'gb/block-map', {
 
 		return (
 			<div { ... blockProps }>
-				<div class="gb-map" data-key={ attributes.key } data-lat={ attributes.lat } data-lng={ attributes.lng } data-zoom={ attributes.zoom } data-title={ attributes.title } ></div>
+				<div class="gb-map" 
+					data-key={ attributes.key } 
+					data-lat={ attributes.lat } 
+					data-lng={ attributes.lng } 
+					data-zoom={ attributes.zoom } 
+					data-title={ attributes.title } 
+					data-media-url={ attributes.mediaUrl }
+					data-icon-width={ attributes.iconWidth }
+					data-icon-height={ attributes.iconHeight }
+				></div>
 			</div>
 		);
 	}

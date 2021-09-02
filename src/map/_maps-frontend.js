@@ -1,26 +1,43 @@
 function initMap() {
-	if( document.querySelector('.gb-map') ) {
-		const map = document.querySelector('.gb-map');
-		if( map.dataset.key ) {
-			const data = map.dataset;
-			// console.log( data );
-			const center = { lat: parseFloat( data.lat ), lng: parseFloat( data.lng ) };
-			googleMap = new google.maps.Map( map, {
+	document.querySelectorAll('.gb-map').forEach( ( wrapper, k ) => {
+		// const map = document.querySelector('.gb-map');
+		if( wrapper.dataset.key ) {
+			const { lat, lng, zoom, title, mediaUrl, iconWidth, iconHeight } = wrapper.dataset;
+			const center = { lat: parseFloat( lat ), lng: parseFloat( lng ) };
+			const map = new google.maps.Map( wrapper, {
 				center: center,
-				zoom: parseInt( data.zoom )
+				zoom: parseInt( zoom )
 			});
 
-			new google.maps.Marker({
-				position: center,
-				googleMap,
-				label: "LABEL"
-			});
+			if( mediaUrl && iconWidth && iconHeight ) {
+				// Create icon
+				const image = {
+					url: mediaUrl,
+					scaledSize: new google.maps.Size( iconWidth, iconHeight )
+				};
+				// Add to map
+				new google.maps.Marker({
+					position: center,
+					map,
+					icon: image,
+					title: title,
+				});
+			}
+			else {
+				// Add to map generic marker
+				new google.maps.Marker({
+					position: center,
+					map,
+					title: title,
+				});
+			}
 		}
-	}
+	} ); 
 }
 
 document.addEventListener( "DOMContentLoaded", function( e ) {
 	if( document.querySelector('.gb-map') ) {
+		// First Map Key
 		const map = document.querySelector('.gb-map');
 		if( map.dataset.key ) {
 			let maps = document.createElement( 'script' );

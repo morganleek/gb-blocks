@@ -33,6 +33,18 @@
 				'title' => array(
 					'type' => 'string',
 					'default' => ''
+				),
+				'mediaUrl' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'iconWidth' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'iconHeight' => array(
+					'type' => 'string',
+					'default' => ''
 				)
 			)
 		) );
@@ -40,52 +52,38 @@
 
 	add_action( 'init', 'gb_blocks_map_init', 55 );
 
-	function gb_blocks_map_render_callback( $block_attributes, $content ) {
-		$html = '';
+	// function gb_blocks_map_render_callback( $block_attributes, $content ) {
+	// 	$html = '';
 		
-		$html .= '<div class="wp-block wp-block-gb-map">';
-			if( $block_attributes['key'] !== 'Key' &&
-					isset( $block_attributes['zoom'] ) &&
-					isset( $block_attributes['lat'] ) &&
-					isset( $block_attributes['lng'] ) 
-			) {
+	// 	$html .= '<div class="wp-block wp-block-gb-map">';
+	// 		if( $block_attributes['key'] !== 'Key' &&
+	// 				isset( $block_attributes['zoom'] ) &&
+	// 				isset( $block_attributes['lat'] ) &&
+	// 				isset( $block_attributes['lng'] ) 
+	// 		) {
 				
-				
+	// 			$media_url = isset( $block_attributes['mediaUrl'] ) ? ' data-media-url="' . $block_attributes['mediaUrl'] . '"' : '';
+	// 			$icon_width = isset( $block_attributes['iconWidth'] ) ? ' data-icon-width="' . $block_attributes['iconWidth'] . '"' : '';
+	// 			$icon_height = isset( $block_attributes['iconHeight'] ) ? ' data-icon-height="' . $block_attributes['iconHeight'] . '"' : '';
+	// 			$html .= '<pre>' . print_r( $block_attributes, true ) . '</pre>';
+	// 			$html .= '<div id="map"
+	// 				data-key="' . $block_attributes['key'] . '"
+	// 				data-lat="' . $block_attributes['lat'] . '"
+	// 				data-lng="' . $block_attributes['lng'] . '"
+	// 				data-zoom="' . $block_attributes['zoom'] . '"
+	// 				data-title="' . $block_attributes['title'] . '"
+	// 				' . $media_url . '
+	// 				' . $icon_width . '
+	// 				' . $icon_height . '
+	// 				></div>';
+	// 		}
+	// 		else {
+	// 			$html .= '<p>Please enter all required parameters</p>';
+	// 		}
+	// 	$html .= '</div>';
 
-				// $id = get_the_ID();
-				$html .= '<div id="map"
-					data-key="' . $block_attributes['key'] . '"
-					data-lat="' . $block_attributes['lat'] . '"
-					data-lng="' . $block_attributes['lng'] . '"
-					data-zoom="' . $block_attributes['zoom'] . '"
-					data-title="' . $block_attributes['title'] . '"
-					></div>';
-
-				// $html .= '<script type="text/javascript">
-				// 	function initMap() {
-				// 		const center = {lat: ' . $block_attributes['lat'] . ', lng: ' . $block_attributes['lng'] . '};
-				// 		map = new google.maps.Map(document.getElementById(\'map\'), {
-				// 			center: center,
-				// 			zoom: ' . $block_attributes['zoom'] . '
-				// 		});
-
-				// 		new google.maps.Marker({
-				// 			position: center,
-				// 			map,
-				// 			label: "' . $block_attributes['title'] . '",
-				// 		});
-				// 	}
-				// </script>';
-				// $html .= '<script src="https://maps.googleapis.com/maps/api/js?key=' . $block_attributes['key'] . '&callback=initMap&libraries=&v=weekly" async ></script>';
-				
-			}
-			else {
-				$html .= '<p>Please enter all required parameters</p>';
-			}
-		$html .= '</div>';
-
-		return $html;		
-	}
+	// 	return $html;		
+	// }
 
 	function gb_blocks_map_enqueue_if_present() {
 		if( has_block( 'gb/block-map' ) ) {
