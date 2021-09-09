@@ -4,9 +4,11 @@ function initMap() {
 		if( wrapper.dataset.key ) {
 			const { lat, lng, zoom, title, mediaUrl, iconWidth, iconHeight } = wrapper.dataset;
 			const center = { lat: parseFloat( lat ), lng: parseFloat( lng ) };
+			
 			const map = new google.maps.Map( wrapper, {
 				center: center,
-				zoom: parseInt( zoom )
+				zoom: parseInt( zoom ),
+				styles: ( typeof( GBMAPSTYLES ) != 'undefined' ) ? GBMAPSTYLES : []
 			});
 
 			if( mediaUrl && iconWidth && iconHeight ) {
@@ -47,4 +49,3 @@ document.addEventListener( "DOMContentLoaded", function( e ) {
 		}
 	}
 });
-
