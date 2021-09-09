@@ -108,26 +108,28 @@
 								$html .= '</ul>';
 							}
 						}
-
-						$html .= '<ul>';
-							while ( $posts_query->have_posts() ) {
-								$posts_query->the_post();
-
-								// Categories for filtering
-								$categories = [];
-								if( $terms = get_the_terms( get_the_ID(), 'category' ) ) {
-									foreach( $terms as $term ) {
-										$categories[] = 'category-' . $term->slug;
+						
+						if( $posts_query->have_posts() ) {
+							$html .= '<ul class="posts-list posts-found-' . $posts_query->found_posts . '">';
+								while ( $posts_query->have_posts() ) {
+									$posts_query->the_post();
+	
+									// Categories for filtering
+									$categories = [];
+									if( $terms = get_the_terms( get_the_ID(), 'category' ) ) {
+										foreach( $terms as $term ) {
+											$categories[] = 'category-' . $term->slug;
+										}
 									}
+	
+									$html .= '<li class="gb-post-list-item gb-post-id-' . get_the_ID() . '" ';
+										$html .= ( !empty( $categories ) ) ? 'data-categories="' . implode( " ", $categories ) . '" ' : '';
+									$html .= '>';
+										$html .= call_user_func( $block_attributes['callbackFunction'] );
+									$html .= '</li>';
 								}
-
-								$html .= '<li class="gb-post-list-item gb-post-id-' . get_the_ID() . '" ';
-									$html .= ( !empty( $categories ) ) ? 'data-categories="' . implode( " ", $categories ) . '" ' : '';
-								$html .= '>';
-									$html .= call_user_func( $block_attributes['callbackFunction'] );
-								$html .= '</li>';
-							}
-						$html .= '</ul>';
+							$html .= '</ul>';
+						}
 					} 
 					wp_reset_postdata();
 				}

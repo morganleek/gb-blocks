@@ -8,7 +8,7 @@ const { InspectorAdvancedControls }	= wp.blockEditor;
 const { createHigherOrderComponent } = wp.compose;
 const { ToggleControl } = wp.components;
 
-const allowedBlocks = [ 'core/image', 'core/paragraph', 'core/heading' ];
+const allowedBlocks = [ 'core/image', 'core/paragraph', 'core/heading', 'core/spacer' ];
 
 function addAttributes( settings ) {
 	if( typeof settings.attributes !== 'undefined' && allowedBlocks.includes( settings.name ) ){
