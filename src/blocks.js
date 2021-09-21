@@ -14,3 +14,4 @@ import './map/map.js';
 import './posts/posts.js';
 import './gallery/gallery.js';
 import './attributes/attributes.js';
+import './accordion/accordion.js';
