@@ -25,11 +25,17 @@
 				'limit' => array(
 					'type' => 'string'
 				),
+				'paginate' => array(
+					'type' => 'boolean'
+				),
 				'taxonomy' => array(
 					'type' => 'string'
 				),
 				'taxonomyFilter' => array(
 					'type' => 'string'
+				),
+				'taxonomyFilterActive' => array(
+					'type' => 'array'
 				),
 				'taxonomiesAvailable' => array(
 					'type' => 'array'
@@ -63,7 +69,9 @@
 		if( isset( $block_attributes['className'] ) ) {
 			$class_names[] = $block_attributes['className'];
 		}
-
+		
+		// $html .= '<pre>' . print_r( $block_attributes, true ) . '</pre>';
+	
 		$html .= '<div class="' . implode(' ', $class_names ) . '">';
 		if( isset( $block_attributes['postType'] ) ) {
 			if( function_exists( $block_attributes['callbackFunction'] ) ) {
@@ -73,7 +81,13 @@
 					if( isset( $block_attributes['limit'] ) ) {
 						$args['posts_per_page'] = $block_attributes['limit'];
 					}
-					if( isset( $block_attributes['taxonomy'] ) ) {
+					// Check for URL defined taxonomy 
+					if( isset( $_REQUEST['gb-taxonomy'] ) && isset( $_REQUEST['gb-term'] ) ) {
+						$block_attributes['taxonomy'] = $_REQUEST['gb-taxonomy'];
+						$block_attributes['termSlug'] = $_REQUEST['gb-term'];
+					}
+
+					if( isset( $block_attributes['taxonomy'] ) && $block_attributes['taxonomy'] != "All taxonomies" ) {
 						$args['category_name'] = $block_attributes['taxonomy'];
 					}
 					if( !empty( $block_attributes['taxonomy'] ) && !empty( $block_attributes['termSlug'] ) ) {
@@ -88,24 +102,29 @@
 							),
 						);
 					}
+					if( isset( $_REQUEST['gb-page'] ) ) {
+						$args['paged'] = intval( $_REQUEST['gb-page'] );
+					}
 
 					$args = apply_filters( 'gb-posts-before-query', $args, $block_attributes );
 					
 					$posts_query = new WP_Query( $args );
 					if ( $posts_query->have_posts() ) {
-						if( !empty( $block_attributes['taxonomyFilter'] ) ) {
+						if( !empty( $block_attributes['taxonomyFilterActive'] ) ) {
 							// Filter query out to devs
-							$terms_args = apply_filters( 'gb-posts-before-filters-query', array( 'taxonomy' => $block_attributes['taxonomyFilter'] ) );
-							$terms = get_terms( $terms_args );
-							if( $terms ) {
-								$html .= '<ul class="terms-filter">';
-									$html .= '<li data-slug="*" class="current-filter"><a href="#">Show All</a></li>';
-									foreach( $terms as $term ) {
-										$html .= '<li data-slug="' . $term->slug . '">';
-											$html .= '<a href="#">' . $term->name . '</a>';
-										$html .= '</li>';
-									}
-								$html .= '</ul>';
+							foreach( $block_attributes['taxonomyFilterActive'] as $term_slug ) {
+								$terms_args = apply_filters( 'gb-posts-before-filters-query', array( 'taxonomy' => $term_slug['value'] ) );
+								$taxonomy = get_taxonomy( $term_slug['value'] );
+								
+								$terms = get_terms( $terms_args );
+								if( $terms ) {
+									$html .= '<select class="terms-filter" data-taxonomy="' . $term_slug['value'] . '">';
+										$html .= '<option value="" data-slug="*" class="current-filter">Show All ' . $taxonomy->label . '</option>';
+										foreach( $terms as $term ) {
+											$html .= '<option value="' . $term->slug . '">' . $term->name . '</option>';
+										}
+									$html .= '</select>';
+								}
 							}
 						}
 						
@@ -129,6 +148,23 @@
 									$html .= '</li>';
 								}
 							$html .= '</ul>';
+
+							if( isset( $block_attributes['paginate'] ) && $block_attributes['paginate'] ) {
+								if( $posts_query->max_num_pages > 1 ) {
+									$total_pages = $posts_query->max_num_pages;
+									$current = ( $posts_query->query_vars['paged'] == 0 ) ? 1 : $posts_query->query_vars['paged'];
+
+									$html .= '<ul class="gb-post-pagination" >';
+										$html .= '<li class="prev">';
+											$html .= ( $current == 1 ) ? '<span>Previous</span>' : '<a href="?gb-page=' . ( $current - 1) . '">Previous</a>';
+										$html .= '</li>';
+										$html .= '<li class="next">';
+											$html .= ( $current == $total_pages ) ? '<span>Next</span>' : '<a href="?gb-page=' . ( $current + 1) . '">Next</a>';
+										$html .= '</li>';
+									$html .= '</ul>';
+									
+								}
+							}
 						}
 					} 
 					wp_reset_postdata();
@@ -147,3 +183,11 @@
 
 		return $html;		
 	}
+
+	function gb_blocks_posts_enqueue_if_present() {
+		if( has_block( 'gb/block-posts' ) ) {
+			wp_enqueue_script( 'gb_block_posts', GB_BLOCK__PLUGIN_URL . 'src/posts/_posts-frontend.js', array(), '1.0.0' );
+		}
+	}
+
+	add_action( 'enqueue_block_assets', 'gb_blocks_posts_enqueue_if_present' );

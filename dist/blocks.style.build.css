@@ -49,8 +49,10 @@
   list-style: none;
   padding-left: 0; }
 
-.wp-block.wp-block-gb-block-posts a {
-  pointer-events: none; }
+.wp-block.wp-block-gb-block-posts .gb-post-pagination {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: center; }
 /**
  * #.# Common SCSS
  *

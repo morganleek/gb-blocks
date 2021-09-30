@@ -4,7 +4,7 @@ import './style.scss';
 const { __ } = wp.i18n; 
 const { registerBlockType } = wp.blocks; 
 const { useBlockProps, InspectorControls } = wp.blockEditor;
-const { SelectControl, TextControl } = wp.components;
+const { SelectControl, TextControl, CheckboxControl } = wp.components;
 const { serverSideRender: ServerSideRender } = wp;
 const { Panel, PanelBody, PanelRow } = wp.components;
 
@@ -36,6 +36,10 @@ registerBlockType( 'gb/block-posts', {
 			type: 'string',
 			default: "10"
 		},
+		paginate: {
+			type: 'boolean',
+			default: false
+		},
 		taxonomy: {
 			type: 'string',
 			default: ""
@@ -51,6 +55,10 @@ registerBlockType( 'gb/block-posts', {
 		taxonomyFilter: {
 			type: 'string',
 			default: ""
+		},
+		taxonomyFilterActive: {
+			type: 'array',
+			default: null
 		},
 		callbackFunction: {
 			type: 'string',
@@ -81,17 +89,19 @@ registerBlockType( 'gb/block-posts', {
 		let blockRender;
 		if( attributes ) {
 			if( attributes.postType ) {
-				let { postType } = attributes;
+				const { postType, limit, taxonomy, taxonomyFilter, termSlug, callbackFunction, className, paginate, taxonomyFilterActive } = attributes;
 				blockRender = <ServerSideRender
 					block="gb/block-posts"
 					attributes={ { 
-						postType: attributes.postType,
-						limit: attributes.limit,
-						taxonomy: attributes.taxonomy,
-						taxonomyFilter: attributes.taxonomyFilter,
-						termSlug: attributes.termSlug,
-						callbackFunction: attributes.callbackFunction,
-						className: attributes.className
+						postType: postType,
+						limit: limit,
+						taxonomy: taxonomy,
+						taxonomyFilter: taxonomyFilter,
+						termSlug: termSlug,
+						callbackFunction: callbackFunction,
+						className: className,
+						paginate: paginate,
+						taxonomyFilterActive: taxonomyFilterActive
 					} }
 				/>
 			}
@@ -111,8 +121,13 @@ registerBlockType( 'gb/block-posts', {
 				context: 'view',
 			}).then(data => {	
 				let taxonomyTemp = [ { value: null, label: 'All taxonomies' } ];
-				data.taxonomies.forEach( tax => taxonomyTemp.push( { value: tax, label: ( tax[0].toUpperCase() + tax.substr( 1 ) ).replaceAll( '_', ' ' ) } ) );
+				let taxonomyCheckboxTemp = [];
+				data.taxonomies.forEach( ( tax ) => {
+					taxonomyTemp.push( { value: tax, label: ( tax[0].toUpperCase() + tax.substr( 1 ) ).replaceAll( '_', ' ' ) } ) 
+					taxonomyCheckboxTemp.push( { value: tax, visible: false } );
+				}	);
 				setAttributes( { taxonomiesAvailable: taxonomyTemp } );
+				setAttributes( { taxonomyFilterActive: taxonomyCheckboxTemp } );
 			});
 		};
 
@@ -124,16 +139,39 @@ registerBlockType( 'gb/block-posts', {
 			setAttributes( { taxonomyFilter: newTaxonomy } );
 		}
 		
+		// Add filter checkboxes
+		let filterTaxononmyCheckboxes = [];
+		if( attributes.taxonomyFilterActive ) {
+			if( attributes.taxonomyFilterActive.length > 0 ) {
+				for( const n in attributes.taxonomyFilterActive ) {
+					const label = attributes.taxonomyFilterActive[n];
+					filterTaxononmyCheckboxes.push(
+						<CheckboxControl
+							label={ ( label.value[0].toUpperCase() + label.value.substr( 1 ) ).replaceAll( '_', ' ' ) }
+							checked={ label.visible }
+							onChange={ ( newStatus ) => {
+								console.log( newStatus + ' ' + n );
+								let taxChecks = [...attributes.taxonomyFilterActive];
+								let taxItem = {...taxChecks[n]};
+								taxItem['visible'] = newStatus;
+								taxChecks[n] = taxItem;
+								setAttributes( { taxonomyFilterActive: taxChecks } );
+							} }
+						/>
+					);
+				}
+			}
+			else {
+				filterTaxononmyCheckboxes.push( <p><em>Post type contains no terms</em></p> );
+			}
+			
+		}
+		
 		return (
 			<div { ... blockProps }>
 				<InspectorControls>
 					<PanelBody title="Posts Settings" icon={ more } initialOpen={ true }>
 						<div>
-							<TextControl
-								label="Post limit"
-								value={ attributes.limit }
-								onChange={ ( newLimit ) => setAttributes( { limit: newLimit } ) }
-							/>
 							<TextControl
 								label="Layout callback function"
 								value={ attributes.callbackFunction }
@@ -167,17 +205,23 @@ registerBlockType( 'gb/block-posts', {
 							}
 						</div>
 					</PanelBody>
+					<PanelBody title="Posts Limits" icon={ more } initialOpen={ true }>
+						<div>
+							<TextControl
+								label="Post limit"
+								value={ attributes.limit }
+								onChange={ ( newLimit ) => setAttributes( { limit: newLimit } ) }
+							/>
+							<CheckboxControl
+								label="Paginate"
+								checked={ attributes.paginate }
+								onChange={ ( newPaginate ) => setAttributes( { paginate: newPaginate } ) }
+							/>
+						</div>
+					</PanelBody>
 					<PanelBody title="Filters Settings" icon={ more } initialOpen={ true }>
 						<div>
-							{ attributes.taxonomiesAvailable
-								? <SelectControl 
-										label={ __( 'Filter by taxonomy: ' ) }
-										onChange={ onUpdateTaxonomyFilter }
-										value={ attributes.taxonomyFilter }
-										options={ attributes.taxonomiesAvailable }
-									/>
-								: <p></p>
-							}
+							{ filterTaxononmyCheckboxes }
 						</div>
 					</PanelBody>
 				</InspectorControls>
