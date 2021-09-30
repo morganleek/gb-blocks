@@ -113,17 +113,20 @@
 						if( !empty( $block_attributes['taxonomyFilterActive'] ) ) {
 							// Filter query out to devs
 							foreach( $block_attributes['taxonomyFilterActive'] as $term_slug ) {
-								$terms_args = apply_filters( 'gb-posts-before-filters-query', array( 'taxonomy' => $term_slug['value'] ) );
-								$taxonomy = get_taxonomy( $term_slug['value'] );
-								
-								$terms = get_terms( $terms_args );
-								if( $terms ) {
-									$html .= '<select class="terms-filter" data-taxonomy="' . $term_slug['value'] . '">';
-										$html .= '<option value="" data-slug="*" class="current-filter">Show All ' . $taxonomy->label . '</option>';
-										foreach( $terms as $term ) {
-											$html .= '<option value="' . $term->slug . '">' . $term->name . '</option>';
-										}
-									$html .= '</select>';
+								// $html .= '<pre>' . var_dump( $term_slug['visible'], true ) . '</pre>';
+								if( $term_slug['visible'] == true ) {
+									$terms_args = apply_filters( 'gb-posts-before-filters-query', array( 'taxonomy' => $term_slug['value'] ) );
+									$taxonomy = get_taxonomy( $term_slug['value'] );
+									
+									$terms = get_terms( $terms_args );
+									if( $terms ) {
+										$html .= '<select class="terms-filter" data-taxonomy="' . $term_slug['value'] . '">';
+											$html .= '<option value="" data-slug="*" class="current-filter">Show All ' . $taxonomy->label . '</option>';
+											foreach( $terms as $term ) {
+												$html .= '<option value="' . $term->slug . '">' . $term->name . '</option>';
+											}
+										$html .= '</select>';
+									}
 								}
 							}
 						}
