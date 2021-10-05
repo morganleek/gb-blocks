@@ -135,7 +135,7 @@
 							if( !empty( $filters ) ) {
 								$html .= '<div class="filters-wrapper">';
 									foreach( $filters as $filter ) {
-										$html .= '<div clas="filters-filter">';
+										$html .= '<div class="filters-filter">';
 											$html .= apply_filters( 'gb-blocks-posts-filters-wrapper', $filter );
 										$html .= '</div>';
 									}
