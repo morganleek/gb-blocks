@@ -81,40 +81,47 @@
 					if( isset( $block_attributes['limit'] ) ) {
 						$args['posts_per_page'] = $block_attributes['limit'];
 					}
-					// Check for URL defined taxonomy 
-					if( isset( $_REQUEST['gb-taxonomy'] ) && isset( $_REQUEST['gb-term'] ) ) {
-						$block_attributes['taxonomy'] = $_REQUEST['gb-taxonomy'];
-						$block_attributes['termSlug'] = $_REQUEST['gb-term'];
-					}
 
 					if( isset( $block_attributes['taxonomy'] ) && $block_attributes['taxonomy'] != "All taxonomies" ) {
 						$args['category_name'] = $block_attributes['taxonomy'];
 					}
+					$args['tax_query'] = array();
 					if( !empty( $block_attributes['taxonomy'] ) && !empty( $block_attributes['termSlug'] ) ) {
 						// Remove category if there is a term
 						unset( $args['category_name'] );
 						// Search by term
-						$args['tax_query'] = array(
-							array(
+						array_push( $args['tax_query'], array(
 								'taxonomy' => $block_attributes['taxonomy'],
 								'field'    => 'slug',
 								'terms'    => $block_attributes['termSlug']
-							),
+							)
 						);
 					}
+					// Check for URL defined taxonomy 
+					if( isset( $_REQUEST['gb-taxonomy'] ) && isset( $_REQUEST['gb-term'] ) ) {
+						// $block_attributes['taxonomy'] = $_REQUEST['gb-taxonomy'];
+						// $block_attributes['termSlug'] = $_REQUEST['gb-term'];
+						array_push( $args['tax_query'], array(
+								'taxonomy' => $_REQUEST['gb-taxonomy'],
+								'field'    => 'slug',
+								'terms'    => $_REQUEST['gb-term']
+							)
+						);
+					}
+
 					if( isset( $_REQUEST['gb-page'] ) ) {
 						$args['paged'] = intval( $_REQUEST['gb-page'] );
 					}
 
 					$args = apply_filters( 'gb-posts-before-query', $args, $block_attributes );
-					
+
 					$posts_query = new WP_Query( $args );
 					if ( $posts_query->have_posts() ) {
 						if( !empty( $block_attributes['taxonomyFilterActive'] ) ) {
 							// Filter query out to devs
 							$filters = [];
 							foreach( $block_attributes['taxonomyFilterActive'] as $term_slug ) {
-								if( $term_slug['visible'] == true ) {
+								if( !( $term_slug['visible'] === false || $term_slug['visible'] === 'false' ) ) {
 									$filter = '';
 									$terms_args = apply_filters( 'gb-posts-before-filters-query', array( 'taxonomy' => $term_slug['value'] ) );
 									$taxonomy = get_taxonomy( $term_slug['value'] );
@@ -124,14 +131,15 @@
 										$filter .= '<select class="terms-filter" data-taxonomy="' . $term_slug['value'] . '">';
 											$filter .= '<option value="" data-slug="*" class="current-filter">Show All ' . $taxonomy->label . '</option>';
 											foreach( $terms as $term ) {
-												$filter .= '<option value="' . $term->slug . '">' . $term->name . '</option>';
+												$selected = ( ( $term_slug['value'] == $_REQUEST['gb-taxonomy'] ) &&  ( $_REQUEST['gb-term'] == $term->slug ) ) ? 'selected' : '';
+												$filter .= '<option value="' . $term->slug . '" ' . $selected . '>' . $term->name . '</option>';
 											}
 										$filter .= '</select>';
 										$filters[] = $filter;
 									}
 								}
 							}
-
+							
 							if( !empty( $filters ) ) {
 								$html .= '<div class="filters-wrapper">';
 									foreach( $filters as $filter ) {
