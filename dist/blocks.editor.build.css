@@ -24,8 +24,12 @@
  * Can include things like variables and mixins
  * that are used across the project.
 */
-.wp-block.wp-block-gb-block-posts a {
+.wp-block.wp-block-gb-block-posts select, .wp-block.wp-block-gb-block-posts a {
   pointer-events: none; }
+
+.wp-block.wp-block-gb-block-posts.no-post-type-set, .wp-block.wp-block-gb-block-posts.no-posts-found {
+  padding: 10px 20px;
+  border: 1px dashed #000; }
 /**
  * #.# Common SCSS
  *
