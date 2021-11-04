@@ -1,6 +1,6 @@
 .wp-block-gb-block-gallery {
 	// &.is-selected {}
-	& > .block-editor-inner-blocks .block-editor-block-list__layout {
+	.slides-wrapper > .block-editor-inner-blocks .block-editor-block-list__layout {
 		& > * {
 			&:not(:first-child) {
 				display: none;
@@ -8,7 +8,7 @@
 		}
 	}
 	&.has-child-selected {
-		& > .block-editor-inner-blocks .block-editor-block-list__layout {
+		.slides-wrapper > .block-editor-inner-blocks .block-editor-block-list__layout {
 			& > * {
 				display: flex;
 			}
