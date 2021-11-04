@@ -14,6 +14,11 @@ const { more } = '@wordpress/icons';
 
 const ALLOWED_BLOCKS = [ 'core/cover' ];
 
+const attributes = {};
+const supports = {
+	align: true
+}
+
 registerBlockType( 'gb/block-gallery', {
 	apiVersion: 2,
 	title: __( 'Gallery Slider' ), 
@@ -23,25 +28,71 @@ registerBlockType( 'gb/block-gallery', {
 		__( 'Gallery' ),
 		__( 'Slider' ),
 	],
-	attributes: {},
+	attributes,
+	supports,
 
 	edit: () => {
 		const blockProps = useBlockProps();
 
 		return (
 			<div { ...blockProps }>
-				<InnerBlocks allowedBlocks={ ALLOWED_BLOCKS } />
+				<div class="slides-wrapper">
+					<InnerBlocks allowedBlocks={ ALLOWED_BLOCKS } />
+				</div>
 			</div>
 		);
 	},
 
-	save: () => {
+	save: ( props ) => {
 		const blockProps = useBlockProps.save();
+		// console.log( blockProps );
+		// console.log( props );
 
 		return (
 			<div { ...blockProps }>
-				<InnerBlocks.Content />
+				<div class="slides-wrapper">
+					<InnerBlocks.Content />
+				</div>
 			</div>
 		);
 	},
+
+	deprecated: [
+		{
+			attributes,
+			migrate( attributes, innerBlocks ) {
+				return (
+					<div class="slides-wrapper">
+						{ innerBlocks }
+					</div>
+				);
+			},
+			save( props ) {
+				const blockProps = useBlockProps.save();
+				return (
+					<div { ...blockProps }>
+						<InnerBlocks.Content />
+					</div>
+				);
+			},
+		},
+	],
+
+	// depricated: [
+	// 	{
+	// 		attributes,
+	// 		supports,
+
+	// 		save: ( props ) => {
+	// 			console.log( 'running' );
+	// 			const blockProps = useBlockProps.save();
+
+	// 			return (
+	// 				<div { ...blockProps }>
+	// 					<InnerBlocks.Content />
+	// 				</div>
+	// 			);
+	// 		}
+	// 	}
+	// ]
 } );
