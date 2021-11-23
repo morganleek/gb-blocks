@@ -40,19 +40,21 @@
 		$html = '';
 
 		// global $post;
-		// $html .= '<pre>' . print_r($post, true) . '</pre>';
+		// $html .= '<pre>' . print_r($block_attributes, true) . '</pre>';
 
 		$class_names = array(
 			'wp-block',
-			'wp-block-gb-menu'
+			'wp-block-gb-menu',
+			'wp-block-gb-block-gb-menu'
 		);
 		if( isset( $block_attributes['className'] ) ) {
-			$class_names[] = $block_attributes['className'];
+			$additional = explode( ' ', $block_attributes['className'] ); 
+			$_class_names = array_unique( array_merge( $class_names, $additional ) );
 		}
 
 		if( isset( $block_attributes['menu'] ) && !empty( $block_attributes['menu'] ) ) {
 			// Render menu
-			$html .= '<nav class="' . implode( ' ', $class_names ) . '">';
+			$html .= '<nav class="' . implode( ' ', $_class_names ) . '">';
 				$html .= gb_blocks_menu_nav( array ( 
 					'theme_location' => $block_attributes['menu'],
 					'echo' => false

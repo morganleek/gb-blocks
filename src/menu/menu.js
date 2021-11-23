@@ -44,11 +44,13 @@ registerBlockType( 'gb/block-gb-menu', {
 		const blockProps = useBlockProps();
 
 		let blockRender;
+		
 		if( attributes.menu ) {
 			blockRender = <ServerSideRender
 				block="gb/block-gb-menu"
 				attributes={ { 
-					menu: attributes.menu
+					menu: attributes.menu,
+					className: blockProps.className
 				} }
 			/>
 		}
