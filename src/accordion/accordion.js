@@ -30,6 +30,11 @@ registerBlockType( 'gb/block-accordion', {
 			selector: '.title'
 		},
 	},
+	supports: {
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"className": true,
+	},
 
 	edit: ( { attributes, setAttributes } ) => {
 		const blockProps = useBlockProps();
