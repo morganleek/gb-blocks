@@ -5,7 +5,7 @@
  * Description: Extra blocks
  * Author: Morgan Leek
  * Author URI: https://morganleek.me/
- * Version: 1.0.12
+ * Version: 1.0.13
  * License: GPL2+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.txt
  *
@@ -33,5 +33,6 @@
 	require_once GB_BLOCK__PLUGIN_DIR . 'src/menu/menu.php';
 	require_once GB_BLOCK__PLUGIN_DIR . 'src/map/map.php';
 	require_once GB_BLOCK__PLUGIN_DIR . 'src/posts/posts.php';
+	require_once GB_BLOCK__PLUGIN_DIR . 'src/terms/terms.php';
 
 	// require_once plugin_dir_path( __FILE__ ) . 'src/init.php';

@@ -12,6 +12,7 @@
 import './menu/menu.js';
 import './map/map.js';
 import './posts/posts.js';
+import './terms/terms.js';
 import './gallery/gallery.js';
 import './attributes/attributes.js';
 import './accordion/accordion.js';

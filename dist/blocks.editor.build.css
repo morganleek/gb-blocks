@@ -36,6 +36,12 @@
  * Can include things like variables and mixins
  * that are used across the project.
 */
+/**
+ * #.# Common SCSS
+ *
+ * Can include things like variables and mixins
+ * that are used across the project.
+*/
 .wp-block-gb-block-gallery .slides-wrapper > .block-editor-inner-blocks .block-editor-block-list__layout > *:not(:first-child) {
   display: none; }
 
