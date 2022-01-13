@@ -5,7 +5,7 @@
  * Description: Extra blocks
  * Author: Morgan Leek
  * Author URI: https://morganleek.me/
- * Version: 1.0.14
+ * Version: 1.0.15
  * License: GPL2+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.txt
  *
