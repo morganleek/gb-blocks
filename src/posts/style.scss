@@ -5,7 +5,13 @@
 	}
 	.gb-post-pagination {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: auto auto auto;
 		text-align: center;
+		.prev {
+			justify-self: end;
+		}
+		.next {
+			justify-self: start;
+		}
 	}
 }

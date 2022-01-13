@@ -179,6 +179,11 @@
 								$posts .= '<li class="prev">';
 									$posts .= ( $current == 1 ) ? '<span>Previous</span>' : '<a href="?gb-page=' . ( $current - 1) . '">Previous</a>';
 								$posts .= '</li>';
+								$posts .= '<li class="count">';
+									$posts .= '<span class="current">' . $current . '<span>';
+									$posts .= '<span class="joiner"> of </span>';
+									$posts .= '<span class="total">' . $total_pages . '<span>';
+								$posts .= '</li>';
 								$posts .= '<li class="next">';
 									$posts .= ( $current == $total_pages ) ? '<span>Next</span>' : '<a href="?gb-page=' . ( $current + 1) . '">Next</a>';
 								$posts .= '</li>';
