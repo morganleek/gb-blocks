@@ -55,6 +55,36 @@
 
 	add_action( 'init', 'gb_blocks_posts_init', 55 );
 
+	function gb_sort_terms_hierarchically( Array &$cats, Array &$into, $parentId = 0 ) {
+    foreach ($cats as $i => $cat) {
+        if ($cat->parent == $parentId) {
+            $into[$cat->term_id] = $cat;
+            unset($cats[$i]);
+        }
+    }
+
+    foreach ($into as $topCat) {
+        $topCat->children = array();
+        gb_sort_terms_hierarchically($cats, $topCat->children, $topCat->term_id);
+    }
+	}
+
+	function gb_terms_to_options( Array $terms, $taxonomy, $slug = '', $indent = 0 ) {
+		$options = '';
+
+		foreach( $terms as $t ) {
+			$selected = ( ( $t->taxonomy == $taxonomy ) &&  ( $t->slug == $slug ) ) ? 'selected' : '';
+			$options .= '<option value="' . $t->slug . '" ' . $selected . '>' . str_repeat( '&nbsp;', $indent ) . $t->name . '</option>';
+			if( !empty( $t->children ) ) {
+				// $options .= '<optgroup>';
+					$options .= gb_terms_to_options( $t->children, $taxonomy, $slug, $indent + 2 );
+				// $options .= '</optgroup>';
+			}
+		}
+
+		return $options;
+	}
+
 	function gb_blocks_posts_render_callback( $block_attributes, $content ) {
 		
 		$html = '';
@@ -121,17 +151,23 @@
 						foreach( $block_attributes['taxonomyFilterActive'] as $term_slug ) {
 							if( !( $term_slug['visible'] === false || $term_slug['visible'] === 'false' ) ) {
 								$filter = '';
-								$terms_args = apply_filters( 'gb-posts-before-filters-query', array( 'taxonomy' => $term_slug['value'] ) );
+								$terms_args = apply_filters( 'gb-posts-before-filters-query', array( 
+									'taxonomy' => $term_slug['value'], 
+									// 'fields' => 'id=>name' // returns associative array
+								) );
 								$taxonomy = get_taxonomy( $term_slug['value'] );
 								
 								$terms = get_terms( $terms_args );
-								if( $terms ) {
+								$terms_hierarchy = []; // _get_term_hierarchy( $term_slug['value'] );
+								
+								// Sort with hierachy 
+								gb_sort_terms_hierarchically( $terms, $terms_hierarchy );
+
+								if( $terms_hierarchy ) {
 									$filter .= '<select class="terms-filter" data-taxonomy="' . $term_slug['value'] . '">';
 										$filter .= '<option value="" data-slug="*" class="current-filter">Show All ' . $taxonomy->label . '</option>';
-										foreach( $terms as $term ) {
-											$selected = ( ( $term_slug['value'] == $_REQUEST['gb-taxonomy'] ) &&  ( $_REQUEST['gb-term'] == $term->slug ) ) ? 'selected' : '';
-											$filter .= '<option value="' . $term->slug . '" ' . $selected . '>' . $term->name . '</option>';
-										}
+										// Use function because of hierachy of items
+										$filter .= gb_terms_to_options( $terms_hierarchy, $_REQUEST['gb-taxonomy'], $_REQUEST['gb-term'] );
 									$filter .= '</select>';
 									$filters[] = $filter;
 								}
