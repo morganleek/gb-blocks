@@ -8,6 +8,9 @@ const { SelectControl, TextControl, CheckboxControl } = wp.components;
 const { serverSideRender: ServerSideRender } = wp;
 const { Panel, PanelBody, PanelRow } = wp.components;
 
+// Everything image listener
+const event = new Event( 'EverythingImage::Update' );
+
 const { more } = '@wordpress/icons';
 
 registerBlockType( 'gb/block-posts', {
@@ -166,7 +169,10 @@ registerBlockType( 'gb/block-posts', {
 			}
 			
 		}
-		
+
+		// Fire event so WP Everything Images will appear
+		document.dispatchEvent( event );
+
 		return (
 			<div { ... blockProps }>
 				<InspectorControls>
