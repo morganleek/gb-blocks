@@ -161,16 +161,19 @@
 								$terms_hierarchy = []; // _get_term_hierarchy( $term_slug['value'] );
 								
 								// Sort with hierachy 
-								gb_sort_terms_hierarchically( $terms, $terms_hierarchy );
-
-								if( $terms_hierarchy ) {
-									$filter .= '<select class="terms-filter" data-taxonomy="' . $term_slug['value'] . '">';
-										$filter .= '<option value="" data-slug="*" class="current-filter">Show All ' . $taxonomy->label . '</option>';
-										// Use function because of hierachy of items
-										$filter .= gb_terms_to_options( $terms_hierarchy, $_REQUEST['gb-taxonomy'], $_REQUEST['gb-term'] );
-									$filter .= '</select>';
-									$filters[] = $filter;
+								if( !is_wp_error( $terms ) ) { // Throws error if term doesn't exist
+									gb_sort_terms_hierarchically( $terms, $terms_hierarchy );
+									
+									if( $terms_hierarchy ) {
+										$filter .= '<select class="terms-filter" data-taxonomy="' . $term_slug['value'] . '">';
+											$filter .= '<option value="" data-slug="*" class="current-filter">Show All ' . $taxonomy->label . '</option>';
+											// Use function because of hierachy of items
+											$filter .= gb_terms_to_options( $terms_hierarchy, $_REQUEST['gb-taxonomy'], $_REQUEST['gb-term'] );
+										$filter .= '</select>';
+										$filters[] = $filter;
+									}
 								}
+
 							}
 						}
 						
