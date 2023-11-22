@@ -1,6 +1,6 @@
 {
   "name": "gb-blocks-cgb-guten-block",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "start": "cgb-scripts start",
@@ -8,9 +8,9 @@
     "eject": "cgb-scripts eject"
   },
   "dependencies": {
+    "cgb-scripts": "1.23.1",
     "@react-google-maps/api": "^2.2.0",
     "@wordpress/icons": "^4.0.0",
-    "cgb-scripts": "1.23.1",
     "load-google-maps-api": "^2.0.2"
   }
 }
