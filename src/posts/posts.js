@@ -4,9 +4,10 @@ import './style.scss';
 const { __ } = wp.i18n; 
 const { registerBlockType } = wp.blocks; 
 const { useBlockProps, InspectorControls } = wp.blockEditor;
-const { SelectControl, TextControl, CheckboxControl } = wp.components;
+const { SelectControl, TextControl, CheckboxControl, FormTokenField } = wp.components;
 const { serverSideRender: ServerSideRender } = wp;
 const { Panel, PanelBody, PanelRow } = wp.components;
+const { useEffect, useState } = wp.element;
 
 // Everything image listener
 const event = new Event( 'EverythingImage::Update' );
@@ -66,18 +67,21 @@ registerBlockType( 'gb/block-posts', {
 		callbackFunction: {
 			type: 'string',
 			default: ''
+		},
+		excludePosts: {
+			type: 'array',
+			default: []
 		}
 	},
 
 	edit: ( props ) => {
 		const { attributes, setAttributes } = props;
+		const [allPosts, setAllPosts] = useState([]);
 
 		const blockProps = useBlockProps();
 
-		// Get post types
-		if( !attributes.isInPostFetch ) {
-			// Fetch once
-			setAttributes( { isInPostFetch: true } );
+		useEffect( () => {
+			// Load types
 			wp.apiFetch({
 				path: '/wp/v2/types',
 			} ).then( data => {
@@ -87,7 +91,18 @@ registerBlockType( 'gb/block-posts', {
 				}
 				setAttributes( { postTypesAvailable: postTypesTemp } );
 			} );
-		}
+
+			// Fetch all posts if post type is set
+			if( attributes.postType ) {
+				fetchExcludePosts( attributes.postType );
+			}
+		}, [] );
+
+		// Get post types
+		// if( !attributes.isInPostFetch ) {
+		// 	// Fetch once
+		// 	setAttributes( { isInPostFetch: true } );
+		// }
 
 		let blockRender;
 		if( attributes ) {
@@ -132,14 +147,42 @@ registerBlockType( 'gb/block-posts', {
 				setAttributes( { taxonomiesAvailable: taxonomyTemp } );
 				setAttributes( { taxonomyFilterActive: taxonomyCheckboxTemp } );
 			});
+			
+			fetchExcludePosts( newPostType );
 		};
 
+		const fetchExcludePosts = ( postType ) => {
+			// Get a list of all posts in this type
+			wp.apiFetch({	
+				path: '/wp/v2/' + postType
+			}).then( data => {
+				const posts = data.map(post => (
+					{
+						id: post.id,
+						label: post.title.rendered
+					}
+				));
+				setAllPosts( posts ); 
+			} );
+		}
+		
 		const onUpdateTaxonomy = ( newTaxonomy ) => {
 			setAttributes( { taxonomy: newTaxonomy } );
 		}
 
 		const onUpdateTaxonomyFilter = ( newTaxonomy ) => {
 			setAttributes( { taxonomyFilter: newTaxonomy } );
+		}
+
+		const updateSelectedExcludedPosts = ( selected ) => {
+			
+			
+			// Extract buoy IDs
+			const newIds = allPosts
+				.filter( ( post ) => selected.includes( post.label ) )
+				.map( ( post ) => post.id );
+			console.log( newIds );
+			setAttributes( { excludePosts: newIds } );
 		}
 		
 		// Add filter checkboxes
@@ -199,15 +242,31 @@ registerBlockType( 'gb/block-posts', {
 										value={ attributes.taxonomy }
 										options={ attributes.taxonomiesAvailable }
 									/>
-								: <p></p>
+								: undefined
 							}
 							{ attributes.taxonomy 
-								? <TextControl
-										label="Term"
-										value={ attributes.termSlug }
-										onChange={ ( newTermSlug ) => setAttributes( { termSlug: newTermSlug } ) }
-									/>
-								: <p></p>
+								? (
+									<div className="term-controls">
+										<TextControl
+											label="Term"
+											value={ attributes.termSlug }
+											onChange={ ( newTermSlug ) => setAttributes( { termSlug: newTermSlug } ) }
+										/>
+										{ allPosts.length > 0 ? 
+										( 
+											<FormTokenField
+												label="Exclude posts"
+												value={
+													allPosts
+														.filter( ( post ) => attributes.excludePosts.includes( post.id ) )
+														.map( ( post ) => post.label )
+												} 
+												suggestions={ allPosts.map( ( post ) => post.label )   }
+												onChange={ updateSelectedExcludedPosts }
+											/> 
+										) : undefined }
+									</div>
+								) : undefined
 							}
 						</div>
 					</PanelBody>

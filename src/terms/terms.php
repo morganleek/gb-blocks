@@ -97,7 +97,7 @@
 				}
 				
 				$term_query = apply_filters( 'gb_terms_before_query', $term_query, $block_attributes );
-				
+			
 				if( $terms_list = get_terms( $term_query ) ) {
 					// $terms .= apply_filters( 'gb_terms_before_list', $term_query, $block_attributes );
 					$terms .= '<ul class="terms-list terms-list-' . $block_attributes['taxonomy'] . ' terms-found-' . sizeof($terms_list) . '">';

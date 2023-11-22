@@ -48,6 +48,9 @@
 				),
 				'className' => array(
 					'type' => 'string'
+				),
+				'excludePosts' => array(
+					'type' => 'array'
 				)
 			)
 		) );
@@ -136,6 +139,10 @@
 						)
 					);
 				}
+				// Check for excludes
+				if( !empty( $block_attributes['excludePosts'] ) ) {
+					$args['post__not_in'] = $block_attributes['excludePosts'];
+				} 
 
 				if( isset( $_REQUEST['gb-page'] ) ) {
 					$args['paged'] = intval( $_REQUEST['gb-page'] );
